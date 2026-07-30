@@ -93,8 +93,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Recommended Additional Dependencies -->
-		<!-- JWT -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -112,8 +110,7 @@
 			<version>0.12.5</version>
 			<scope>runtime</scope>
 		</dependency>
-		
-		<!-- OpenAPI / Swagger -->
+
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
