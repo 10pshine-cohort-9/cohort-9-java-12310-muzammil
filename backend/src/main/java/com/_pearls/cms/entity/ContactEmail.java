@@ -2,6 +2,9 @@ package com._pearls.cms.entity;
 
 import com._pearls.cms.entity.enums.EmailLabel;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -13,9 +16,12 @@ import lombok.*;
 @Builder
 public class ContactEmail extends BaseEntity {
 
+    @NotBlank(message = "Email Address is required")
+    @Email(message = "Invalid email format")
     @Column(nullable = false)
     private String emailAddress;
 
+    @NotNull(message = "Label is required")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EmailLabel label;

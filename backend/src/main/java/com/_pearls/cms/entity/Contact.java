@@ -3,6 +3,9 @@ package com._pearls.cms.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +18,19 @@ import java.util.List;
 @Builder
 public class Contact extends BaseEntity {
 
-    @Column(nullable = false)
+    @NotBlank(message = "First Name is required")
+    @Size(max = 50, message = "First Name must not exceed 50 characters")
+    @Column(nullable = false, length = 50)
     private String firstName;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Last Name is required")
+    @Size(max = 50, message = "Last Name must not exceed 50 characters")
+    @Column(nullable = false, length = 50)
     private String lastName;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Title is required")
+    @Size(max = 100, message = "Title must not exceed 100 characters")
+    @Column(nullable = false, length = 100)
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
