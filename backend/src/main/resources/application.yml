@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: Contact Management System
