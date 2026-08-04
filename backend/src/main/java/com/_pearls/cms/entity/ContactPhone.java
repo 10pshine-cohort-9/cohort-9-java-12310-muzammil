@@ -26,6 +26,7 @@ public class ContactPhone extends BaseEntity {
     @Column(nullable = false, length = 20)
     private PhoneLabel label;
 
+    @NotNull(message = "Contact is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id", nullable = false)
     private Contact contact;

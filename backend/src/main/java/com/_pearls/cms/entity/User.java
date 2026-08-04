@@ -33,5 +33,16 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @Setter(AccessLevel.NONE)
     private List<Contact> contacts = new ArrayList<>();
+
+    public void addContact(Contact contact) {
+        contacts.add(contact);
+        contact.setUser(this);
+    }
+
+    public void removeContact(Contact contact) {
+        contacts.remove(contact);
+        contact.setUser(null);
+    }
 }

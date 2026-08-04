@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
@@ -33,15 +34,38 @@ public class Contact extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String title;
 
+    @NotNull(message = "User is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @Setter(AccessLevel.NONE)
     private List<ContactEmail> emails = new ArrayList<>();
 
     @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @Setter(AccessLevel.NONE)
     private List<ContactPhone> phones = new ArrayList<>();
+
+    public void addEmail(ContactEmail email) {
+        emails.add(email);
+        email.setContact(this);
+    }
+
+    public void removeEmail(ContactEmail email) {
+        emails.remove(email);
+        email.setContact(null);
+    }
+
+    public void addPhone(ContactPhone phone) {
+        phones.add(phone);
+        phone.setContact(this);
+    }
+
+    public void removePhone(ContactPhone phone) {
+        phones.remove(phone);
+        phone.setContact(null);
+    }
 }
