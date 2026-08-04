@@ -8,17 +8,16 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Entity
-@Table(name = "contact_phones")
+@Table(name = "contact_phones", uniqueConstraints = {
+        @UniqueConstraint(name = "uc_contact_phone", columnNames = {"contact_id", "phone_number"})
+})
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ContactPhone extends BaseEntity {
 
     @NotBlank(message = "Phone Number is required")
-    @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid phone format")
-    @Column(nullable = false)
+    @Pattern(regexp = "^\\+923\\d{9}$", message = "Phone number must be in normalized Pakistani format (+92...)")
+    @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
     @NotNull(message = "Label is required")
@@ -29,5 +28,20 @@ public class ContactPhone extends BaseEntity {
     @NotNull(message = "Contact is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id", nullable = false)
+    @Setter(AccessLevel.PACKAGE)
     private Contact contact;
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setLabel(PhoneLabel label) {
+        this.label = label;
+    }
+
+    @Builder
+    public ContactPhone(String phoneNumber, PhoneLabel label) {
+        this.phoneNumber = phoneNumber;
+        this.label = label;
+    }
 }
