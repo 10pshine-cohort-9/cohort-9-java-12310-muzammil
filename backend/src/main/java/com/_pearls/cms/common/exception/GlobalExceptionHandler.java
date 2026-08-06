@@ -5,7 +5,9 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -38,6 +40,17 @@ public class GlobalExceptionHandler {
                 .distinct()
                 .toList();
         return createErrorResponse("Validation failed", ErrorCode.VALIDATION_FAILED, HttpStatus.BAD_REQUEST, errors);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return createErrorResponse("Invalid request body", ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST, null);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        String message = String.format("Required request parameter '%s' is missing", ex.getParameterName());
+        return createErrorResponse(message, ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST, null);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
