@@ -11,7 +11,13 @@ public interface OtpTokenRepository extends JpaRepository<OtpToken, Long> {
 
     Optional<OtpToken> findByEmail(String email);
 
+    @org.springframework.transaction.annotation.Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM OtpToken o WHERE o.email = :email")
     void deleteByEmail(String email);
+
+    @org.springframework.transaction.annotation.Transactional
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM OtpToken o WHERE o.id = :id")
+    int deleteByIdAndReturnCount(Long id);
 }

@@ -33,11 +33,23 @@ public class EmailServiceImpl implements EmailService {
             message.setText("Your OTP for account verification is: " + otp + "\nThis OTP will expire in 5 minutes.");
             mailSender.send(message);
         } catch (Exception e) {
-            log.error("Failed to send OTP email to {}", to, e); // Deliberately avoiding logging the raw OTP
+            log.error("Failed to send OTP email to {}", maskEmail(to), e); // Deliberately avoiding logging the raw OTP
             throw new ApiException(
                 "Unable to send verification email. Please try again later.",
                 ErrorCode.EMAIL_DELIVERY_FAILED,
                 HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private String maskEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return "***";
+        }
+        String[] parts = email.split("@");
+        String name = parts[0];
+        if (name.length() <= 2) {
+            return "***@" + parts[1];
+        }
+        return name.charAt(0) + "***" + name.charAt(name.length() - 1) + "@" + parts[1];
     }
 }

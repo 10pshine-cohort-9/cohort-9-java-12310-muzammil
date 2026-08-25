@@ -91,13 +91,15 @@ class OtpServiceImplTest {
                 .otpHash(otpHash)
                 .expiresAt(Instant.now().plus(5, ChronoUnit.MINUTES))
                 .build();
+        org.springframework.test.util.ReflectionTestUtils.setField(otpToken, "id", 1L);
 
         when(otpTokenRepository.findByEmail(email)).thenReturn(Optional.of(otpToken));
         when(passwordEncoder.matches(plainOtp, otpHash)).thenReturn(true);
+        when(otpTokenRepository.deleteByIdAndReturnCount(1L)).thenReturn(1);
 
         otpService.verifyOtp(email, plainOtp);
 
-        verify(otpTokenRepository).delete(otpToken);
+        verify(otpTokenRepository).deleteByIdAndReturnCount(1L);
     }
 
     @Test
@@ -147,5 +149,28 @@ class OtpServiceImplTest {
         ApiException exception = assertThrows(ApiException.class, () -> otpService.verifyOtp(email, plainOtp));
         assertEquals(ErrorCode.BAD_REQUEST, exception.getErrorCode());
         assertEquals("Invalid OTP", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("verifyOtp should throw ApiException when OTP has already been used concurrently")
+    void testVerifyOtpAlreadyUsed() {
+        String email = "test@example.com";
+        String plainOtp = "123456";
+        String otpHash = "hashed_123456";
+
+        OtpToken otpToken = OtpToken.builder()
+                .email(email)
+                .otpHash(otpHash)
+                .expiresAt(Instant.now().plus(5, ChronoUnit.MINUTES))
+                .build();
+        org.springframework.test.util.ReflectionTestUtils.setField(otpToken, "id", 1L);
+
+        when(otpTokenRepository.findByEmail(email)).thenReturn(Optional.of(otpToken));
+        when(passwordEncoder.matches(plainOtp, otpHash)).thenReturn(true);
+        when(otpTokenRepository.deleteByIdAndReturnCount(1L)).thenReturn(0);
+
+        ApiException exception = assertThrows(ApiException.class, () -> otpService.verifyOtp(email, plainOtp));
+        assertEquals(ErrorCode.BAD_REQUEST, exception.getErrorCode());
+        assertEquals("OTP has already been used", exception.getMessage());
     }
 }

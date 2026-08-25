@@ -89,4 +89,20 @@ class JwtAuthenticationFilterTest {
 
         assertNotNull(SecurityContextHolder.getContext().getAuthentication());
     }
+
+    @Test
+    @DisplayName("Should not authenticate and continue filter chain if user is not found")
+    void testUserNotFound() throws ServletException, IOException {
+        String token = "validToken";
+        String email = "deleted@example.com";
+        request.addHeader("Authorization", "Bearer " + token);
+
+        when(jwtService.isTokenValid(token)).thenReturn(true);
+        when(jwtService.extractEmail(token)).thenReturn(email);
+        when(userDetailsService.loadUserByUsername(email)).thenThrow(new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found"));
+
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
 }

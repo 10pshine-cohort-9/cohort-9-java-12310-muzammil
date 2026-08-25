@@ -26,7 +26,6 @@ public class OtpServiceImpl implements OtpService {
     private final SecureRandom random = new SecureRandom();
 
     @Override
-    @Transactional
     public void generateAndSendOtp(String email) {
         otpTokenRepository.deleteByEmail(email);
         
@@ -58,6 +57,9 @@ public class OtpServiceImpl implements OtpService {
             throw new ApiException("Invalid OTP", ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST);
         }
 
-        otpTokenRepository.delete(otpToken);
+        int deleted = otpTokenRepository.deleteByIdAndReturnCount(otpToken.getId());
+        if (deleted == 0) {
+            throw new ApiException("OTP has already been used", ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+        }
     }
 }
