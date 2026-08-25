@@ -38,7 +38,7 @@ public class OtpServiceImpl implements OtpService {
                 .expiresAt(Instant.now().plus(5, ChronoUnit.MINUTES))
                 .build();
                 
-        otpTokenRepository.save(otpToken);
+        otpTokenRepository.saveAndFlush(otpToken);
         emailService.sendOtp(email, plainOtp);
     }
 

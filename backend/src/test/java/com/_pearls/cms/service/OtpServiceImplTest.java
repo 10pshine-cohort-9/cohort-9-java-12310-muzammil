@@ -57,7 +57,7 @@ class OtpServiceImplTest {
         verify(otpTokenRepository).deleteByEmail(email);
 
         ArgumentCaptor<OtpToken> captor = ArgumentCaptor.forClass(OtpToken.class);
-        verify(otpTokenRepository).save(captor.capture());
+        verify(otpTokenRepository).saveAndFlush(captor.capture());
         OtpToken savedToken = captor.getValue();
 
         assertEquals(email, savedToken.getEmail());
