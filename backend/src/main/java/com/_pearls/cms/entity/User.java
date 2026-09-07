@@ -1,11 +1,17 @@
 package com._pearls.cms.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +35,9 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(nullable = false)
+    private boolean verified = false;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
@@ -36,6 +45,10 @@ public class User extends BaseEntity {
 
     public List<Contact> getContacts() {
         return Collections.unmodifiableList(contacts);
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 
     public void setEmail(String email) {
